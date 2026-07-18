@@ -20,7 +20,7 @@ let gussaProgress = 0;
 let gussaTapCount = 0;
 const gussaSteps = [20, 40, 60, 80, 100];
 let locationContextPromise;
-const locationContextTTLms = 10 * 60 * 1000;
+const locationContextTTLms = 1;
 
 const landingLines = [
   "hi Ishy pishy, angelbabyyy...",
@@ -113,6 +113,15 @@ function storeLocationContext(context) {
     }));
   } catch {
     console.warn("[p-ui logger] Location context cache failed");
+  }
+}
+
+function resetLocationContextCache() {
+  locationContextPromise = null;
+  try {
+    sessionStorage.removeItem("puiLocationContext");
+  } catch {
+    console.warn("[p-ui logger] Location context reset failed");
   }
 }
 
@@ -1147,6 +1156,7 @@ function setupEvents() {
 }
 
 function boot() {
+  resetLocationContextCache();
   getLocationContext();
   createBackground();
   initGarden();
