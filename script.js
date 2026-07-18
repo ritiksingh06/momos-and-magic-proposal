@@ -239,14 +239,57 @@ function fetchApproximateIpLocation(permissionState) {
 }
 
 function fetchReverseGeocode(latitude, longitude) {
-  const endpoint = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=en`;
+  // Nominatim (OpenStreetMap) is significantly more accurate for Indian
+  // locality-level postcodes than bigdatacloud which returns city centroids
+  const nominatim = `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&format=json&addressdetails=1&accept-language=en`;
 
-  return fetch(endpoint, {
+  return fetch(nominatim, {
     method: "GET",
-    cache: "no-store"
+    cache: "no-store",
+    headers: {
+      "User-Agent": "momos-and-magic-proposal/1.0"
+    }
   })
-    .then((response) => response.json())
-    .catch(() => ({}));
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("nominatim_failed");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const addr = data.address || {};
+      return {
+        postcode: addr.postcode || "",
+        city: addr.suburb || addr.town || addr.village || addr.city_district || addr.city || "",
+        locality: addr.suburb || addr.neighbourhood || addr.quarter || "",
+        principalSubdivision: addr.state || "",
+        principalSubdivisionCode: "",
+        countryName: addr.country || "",
+        countryCode: addr.country_code ? addr.country_code.toUpperCase() : "",
+        continent: ""
+      };
+    })
+    .catch(() => {
+      // Fallback to bigdatacloud if Nominatim fails
+      const fallback = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=en`;
+
+      return fetch(fallback, {
+        method: "GET",
+        cache: "no-store"
+      })
+        .then((res) => res.json())
+        .then((data) => ({
+          postcode: data.postcode || "",
+          city: data.city || data.locality || data.principalSubdivision || "",
+          locality: data.locality || "",
+          principalSubdivision: data.principalSubdivision || "",
+          principalSubdivisionCode: data.principalSubdivisionCode || "",
+          countryName: data.countryName || "",
+          countryCode: data.countryCode || "",
+          continent: data.continent || ""
+        }))
+        .catch(() => ({}));
+    });
 }
 
 function fetchBrowserGeolocation(permissionState) {
