@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magic Apology Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="paper-texture"></div>
+  <div id="starfield" class="layer"></div>
+  <div id="heartfield" class="layer"></div>
+  <div id="fireflies" class="layer"></div>
+  <div id="particle-layer" class="layer"></div>
+
+  <header class="top-bar glass">
+    <div class="vine-progress" aria-label="Story progress">
+      <div class="vine-track"></div>
+      <div id="vine-grow" class="vine-grow"></div>
+      <div class="flower-markers">
+        <span class="marker active"></span>
+        <span class="marker"></span>
+        <span class="marker"></span>
+        <span class="marker"></span>
+        <span class="marker"></span>
+        <span class="marker"></span>
+      </div>
+    </div>
+    <button id="music-toggle" class="tiny-btn" type="button" aria-label="Toggle piano music">Piano: Off</button>
+  </header>
+
+  <main id="app" class="scene-stage scene-1" aria-live="polite">
+    <section id="scene-1" class="scene active">
+      <div class="center-wrap">
+        <div class="envelope-card glass" id="envelope-card">
+          <div class="sticker sleepy-heart">( -.-) zZ ❤</div>
+          <h1 class="title">A Tiny Gift for My Angry Bird!</h1>
+          <p id="landing-type" class="type-line"></p>
+          <button id="open-story" class="primary-btn pulse">✨ Open</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scene-2" class="scene">
+      <div class="card glass question-card">
+        <div class="cat-pop">=^.^=</div>
+        <p class="handwritten">Before anything...</p>
+        <p class="handwritten">I have one tiny question 🥺</p>
+        <p id="sticky-prompt" class="tap-hint">Tap the note to unfold it ✨</p>
+        <div class="sticky-note folded" id="sticky-note">
+          <h2 id="anger-question" class="hidden">Are you still angry with me?</h2>
+        </div>
+        <div id="anger-choices" class="choice-grid hidden">
+          <button class="choice-btn" data-choice="Still a little">😠<span>Still a little</span></button>
+          <button class="choice-btn" data-choice="Maybe not">🙂<span>Maybe not</span></button>
+          <button class="choice-btn" data-choice="I'll hear you">🥹<span>I'll hear you</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scene-3" class="scene">
+      <div class="card glass apology-card">
+        <h2>Tap each little note to unveil my apology</h2>
+        <div id="apology-actions" class="apology-actions"></div>
+        <p id="apology-line" class="apology-line"></p>
+        <button id="next-line" class="primary-btn hidden">Go to Memory Garden</button>
+      </div>
+    </section>
+
+    <section id="scene-4" class="scene">
+      <div class="card glass garden-card">
+        <h2>Memory Garden</h2>
+        <p>Tap each flower to let it bloom.</p>
+        <div id="memory-garden" class="flower-grid"></div>
+        <button id="to-intermission" class="primary-btn hidden">Continue</button>
+      </div>
+    </section>
+
+    <section id="scene-5" class="scene">
+      <div class="card glass gussa-card">
+        <h2>Lady Don kaa Forgiveness Indicator</h2>
+        <p>Tap the heart to heal my heart...</p>
+        <div class="gussa-meter-wrap">
+          <div class="gussa-meter-track">
+            <div id="gussa-meter-fill" class="gussa-meter-fill"></div>
+          </div>
+          <p id="gussa-meter-text" class="gussa-meter-text">0%</p>
+        </div>
+        <button id="gussa-tap" class="heart-tap-btn pulse" type="button">💖 Tap Tap</button>
+        <p id="gussa-result" class="gussa-result hidden">You're forgiven 💕</p>
+      </div>
+    </section>
+
+    <section id="scene-6" class="scene">
+      <div class="card glass intermission-card">
+        <h2>Cute Break</h2>
+        <p>Little friends are cheering for courage.</p>
+        <div class="cute-stage">
+          <div class="sprite cat-chase">🐱💗</div>
+          <div class="sprite bunny-hop">🐰🌸</div>
+          <div class="sprite teddy-float">🧸✨</div>
+        </div>
+        <button id="to-proposal" class="primary-btn">Final Question</button>
+      </div>
+    </section>
+
+    <section id="scene-7" class="scene">
+      <div class="card glass proposal-card">
+        <button id="proposal-reveal" class="seal-btn" type="button">💖 Tap this glowing seal</button>
+        <p id="proposal-type" class="type-line"></p>
+        <h2 id="proposal-question" class="big-question"></h2>
+        <div class="proposal-actions hidden" id="proposal-actions">
+          <button id="yes-btn" class="yes-btn">YES ❤</button>
+          <button id="no-btn" class="no-btn">NO 🙈</button>
+        </div>
+        <div id="yes-moment" class="yes-moment hidden">
+          <p class="yes-faces">🥹 😭 🥰 🐵 🐱 💫 🌸</p>
+          <p id="share-note" class="share-note">Taking you straight to WhatsApp... ❤️</p>
+          <button id="share-btn" class="primary-btn" type="button">📸 Share This Magic</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <canvas id="celebration-canvas"></canvas>
+
+  <footer class="app-footer">
+    <a class="footer-link" href="https://www.instagram.com/ritik.singh_/" target="_blank" rel="noopener noreferrer">
+      Made with bohttttt sara love ❤️, ek plate momo 🥟, by Delhiii ka ldka ✨
+    </a>
+  </footer>
+
+  <script>
+    // window.SORRY_CARD_LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycby7dIPGFcRLjJgPXS9OXOCTMPZf7vkNa9_I3J6qNbjdRUq9aJquCR1j_IaUpMCPxS7j/exec';
+    window.SORRY_CARD_LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyeipRWx6xtK3WqV4H6xzU1X_6zuH7a9fzRlznFkRf2W1bL7GFn7X4mM74hROZT8CKSkw/exec';
+    window.SORRY_CARD_IP_GEO_ENDPOINT = window.SORRY_CARD_IP_GEO_ENDPOINT || 'https://ipwho.is/';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
