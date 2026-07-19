@@ -752,6 +752,7 @@ body {
   width: max-content;
   max-width: calc(100% - 28px);
   line-height: 1.25;
+  pointer-events: none;
   opacity: 0;
   transition: all 0.35s ease;
   z-index: 65;
