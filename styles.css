@@ -966,6 +966,7 @@ body.accepted .proposal-card {
   z-index: 35;
   width: 100%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 244, 250, 0.9));
+  pointer-events: none;
 }
 
 .app-footer p {
@@ -986,6 +987,7 @@ body.accepted .proposal-card {
   text-shadow: 0 1px 4px rgba(255, 255, 255, 0.4);
   text-decoration: none;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .footer-link:hover {
