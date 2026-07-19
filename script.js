@@ -937,7 +937,7 @@ function playTinyPiano() {
   });
 }
 
-function runCelebration() {
+function runCelebration(preopenedWhatsAppTab = null) {
   document.body.classList.add("accepted");
   clearTimeout(runCelebration.acceptedTimer);
   runCelebration.acceptedTimer = setTimeout(() => {
@@ -951,11 +951,24 @@ function runCelebration() {
   proposalActions.classList.add("hidden");
   yesMoment.classList.remove("hidden");
 
-  // Redirect to WhatsApp after confetti finishes
+  // iOS Safari blocks delayed window.open popups.
+  // Strategy:
+  // 1) Try to reuse a tab opened directly from user gesture if available.
+  // 2) Fallback to same-tab redirect so WhatsApp always opens on mobile.
   clearTimeout(runCelebration.waTimer);
   runCelebration.waTimer = setTimeout(() => {
     const msg = encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
-    window.open(`https://wa.me/917291848860?text=${msg}`, "_blank", "noopener");
+    const waUrl = `https://wa.me/917291848860?text=${msg}`;
+
+    try {
+      if (preopenedWhatsAppTab && !preopenedWhatsAppTab.closed) {
+        preopenedWhatsAppTab.location.href = waUrl;
+      } else {
+        window.location.href = waUrl;
+      }
+    } catch {
+      window.location.href = waUrl;
+    }
   }, 3200);
 
   const canvas = document.getElementById("celebration-canvas");
@@ -1167,11 +1180,20 @@ function setupEvents() {
 
   yesBtn.addEventListener("click", () => {
     logClick("yes button clicked");
+
+    // Open a blank tab directly from user gesture for Safari compatibility.
+    let preopenedWhatsAppTab = null;
+    try {
+      preopenedWhatsAppTab = window.open("about:blank", "_blank");
+    } catch {
+      preopenedWhatsAppTab = null;
+    }
+
     const rect = yesBtn.getBoundingClientRect();
     burstBigLove(rect.left + rect.width / 2, rect.top + rect.height / 2);
     emitButtonSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);
     playTinyPiano();
-    runCelebration();
+    runCelebration(preopenedWhatsAppTab);
   });
 
   shareBtn.addEventListener("click", () => {
