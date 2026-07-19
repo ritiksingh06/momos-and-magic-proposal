@@ -878,6 +878,8 @@ function maybeEscapeFromCursor(event) {
 }
 
 function runProposalIntro() {
+  proposalCard.classList.remove("celebrating");
+  yesMoment.classList.add("hidden");
   proposalType.textContent = "";
   proposalQuestion.textContent = "";
   proposalActions.classList.add("hidden");
@@ -1110,8 +1112,8 @@ function setupEvents() {
 
   proposalBtn.addEventListener("click", () => {
     logClick("final question clicked");
-    setScene(7);
     resetProposalScene();
+    setScene(7);
   });
 
   stickyNote.addEventListener("click", () => {
