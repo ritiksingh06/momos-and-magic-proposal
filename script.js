@@ -32,8 +32,7 @@ const apologyLines = [
   "I know I hurt you, and I am truly sorry. sachhi mein!!!",
   "I promise I'll be better for you 🥺",
   "You deserve kindness, patience, and sweetness from me.",
-  "I am trying to grow, not just say words.",
-  "Thank you for giving this moment a chance."
+  "I am trying to grow, not just say words."
 ];
 
 const memoryMessages = [
@@ -47,7 +46,7 @@ const playfulNoMessages = [
   "Oops... pakad ke dikhao 😝",
   "Ek baar aur soch lo... 🥺",
   "Bas ek aur chance? 🌸",
-  "Andi mandi shandi.."
+  "Andi mandi shandi... 😏",
 ];
 
 const cuteTrailEmojis = ["🐻", "🐱", "🐰", "❤️", "✨", "🌸"];
@@ -946,7 +945,7 @@ function runCelebration() {
   proposalCard.classList.add("celebrating");
   proposalRevealBtn.classList.add("hidden");
   proposalType.textContent = "";
-  proposalQuestion.textContent = "Yay! Now go text your boyfriend and tell him you love him! 🥹";
+  proposalQuestion.innerHTML = "Yay! Almost done... 🥹💕<br>If this made you smile,<br>make me smile too.<br>I'm probably staring at my phone right now ;)";
   proposalActions.classList.add("hidden");
   yesMoment.classList.remove("hidden");
 
