@@ -1093,7 +1093,9 @@ function playTinyPiano() {
 }
 
 function triggerWhatsAppRedirect() {
-  const msg = encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
+  const msg = encodeURIComponent(
+  "I forgive you, idiot. ❤️ Now take me out for momos! 🥟❤\n\nP.S. Go back to the page...there's one last surprise waiting for you.😉✨");
+//   encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
   const waUrl = `https://wa.me/917291848860?text=${msg}`;
   const waProtocol = `whatsapp://send?phone=917291848860&text=${msg}`;
 
