@@ -880,7 +880,8 @@ function maybeEscapeFromCursor(event) {
 function generateAndSharePeaceTreaty() {
   // Generate a custom Peace Treaty card as canvas image
   const canvas = document.createElement("canvas");
-  const dpr = window.devicePixelRatio || 1;
+  const isMobileShare = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+  const dpr = Math.min(window.devicePixelRatio || 1, isMobileShare ? 1.35 : 2);
   const width = 1080 * dpr;
   const height = 1350 * dpr;
   canvas.width = width;
@@ -978,28 +979,47 @@ and overwhelming evidence of genuine love...`;
   drawText("Ishita Jaiswal", 270, sigY, 20, "Brush Script MT, cursive", "#8B4C5C", "center", "700");
   drawText("Ritik Singh", 810, sigY, 20, "Brush Script MT, cursive", "#8B4C5C", "center", "700");
 
-  // Convert canvas to blob and share
-  canvas.toBlob((blob) => {
-    const file = new File([blob], "peace-treaty.png", { type: "image/png" });
-    const url = URL.createObjectURL(blob);
+  // Convert canvas to a mobile-friendly share payload.
+  const shareMimeType = isMobileShare ? "image/jpeg" : "image/png";
+  const shareFileName = isMobileShare ? "peace-treaty.jpg" : "peace-treaty.png";
+  const shareQuality = isMobileShare ? 0.82 : 0.92;
 
-    // Try using native Web Share API if available
-    if (navigator.share) {
-      navigator
-        .share({
-          title: "Peace Treaty ❤️",
-          text: "I accept this proposal! 🕊️",
-          files: [file]
-        })
-        .catch(() => {
-          // Fallback: Open in new tab or download
-          downloadCard(url, "peace-treaty.png");
-        });
-    } else {
-      // Fallback: Provide download link
-      downloadCard(url, "peace-treaty.png");
+  canvas.toBlob(async (blob) => {
+    if (!blob) {
+      showToast("Could not prepare image. Please try again.");
+      return;
     }
-  }, "image/png");
+
+    const file = new File([blob], shareFileName, { type: shareMimeType });
+
+    if (!navigator.share) {
+      showToast("Sharing is not supported on this browser.");
+      return;
+    }
+
+    const canShareFiles = typeof navigator.canShare === "function"
+      ? navigator.canShare({ files: [file] })
+      : true;
+
+    if (!canShareFiles) {
+      showToast("This browser cannot share image files here.");
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: "Peace Treaty ❤️",
+        text: "I accept this proposal!",
+        files: [file]
+      });
+      showToast("Shared successfully! 💌");
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        return;
+      }
+      showToast("Could not send image. Please try again.");
+    }
+  }, shareMimeType, shareQuality);
 }
 
 function downloadCard(url, filename) {
