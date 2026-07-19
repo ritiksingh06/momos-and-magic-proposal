@@ -1105,6 +1105,13 @@ function setupEvents() {
     setScene(5);
   });
 
+  intermissionBtn.addEventListener("touchend", (event) => {
+    event.preventDefault();
+    logClick("memory garden continue touched");
+    resetGussaScene();
+    setScene(5);
+  }, { passive: false });
+
   gussaTapBtn.addEventListener("click", () => {
     logClick("gussa meter tap");
     advanceGussaMeter();
@@ -1115,6 +1122,13 @@ function setupEvents() {
     resetProposalScene();
     setScene(7);
   });
+
+  proposalBtn.addEventListener("touchend", (event) => {
+    event.preventDefault();
+    logClick("final question touched");
+    resetProposalScene();
+    setScene(7);
+  }, { passive: false });
 
   stickyNote.addEventListener("click", () => {
     if (!stickyNote.classList.contains("folded")) {
@@ -1134,6 +1148,13 @@ function setupEvents() {
     proposalRevealBtn.classList.add("hidden");
     runProposalIntro();
   });
+
+  proposalRevealBtn.addEventListener("touchend", (event) => {
+    event.preventDefault();
+    logClick("proposal reveal touched");
+    proposalRevealBtn.classList.add("hidden");
+    runProposalIntro();
+  }, { passive: false });
 
   noBtn.addEventListener("pointerenter", handleNoAttempt);
   noBtn.addEventListener("pointerdown", handleNoAttempt);
