@@ -7,7 +7,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260719-toastfix" />
+  <style>
+    #toast {
+      bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+      left: 50% !important;
+      transform: translateX(-50%) translateY(30px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      width: max-content !important;
+      max-width: calc(100% - 24px) !important;
+      padding: 10px 16px !important;
+      line-height: 1.25 !important;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0) !important;
+    }
+  </style>
 </head>
 <body>
   <div class="bg-gradient"></div>
@@ -38,7 +57,7 @@
       <div class="center-wrap">
         <div class="envelope-card glass" id="envelope-card">
           <div class="sticker sleepy-heart">( -.-) zZ ❤</div>
-          <h1 class="title">A Tiny Gift for My Angry Bird!</h1>
+          <h1 class="title">For My Teekhi Mirchi!</h1>
           <p id="landing-type" class="type-line"></p>
           <button id="open-story" class="primary-btn pulse">✨ Open</button>
         </div>
