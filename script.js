@@ -1044,7 +1044,7 @@ function runProposalIntro() {
       return new Promise((resolve) => setTimeout(resolve, 900));
     })
     .then(() => {
-      const question = "Can I be your boyfriend? ❤";
+      const question = "Will you let me be your boyfriend?🤞🥹❤";
       let idx = 0;
       return new Promise((resolve) => {
         const timer = setInterval(() => {
