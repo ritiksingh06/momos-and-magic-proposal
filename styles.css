@@ -8,6 +8,7 @@
   --glass: rgba(255, 255, 255, 0.24);
   --border: rgba(255, 255, 255, 0.48);
   --shadow: 0 20px 45px rgba(82, 42, 100, 0.22);
+  --footer-safe-space: calc(150px + env(safe-area-inset-bottom));
 }
 
 * {
@@ -142,6 +143,8 @@ body {
   font-weight: 800;
   letter-spacing: 0.01em;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tiny-btn {
@@ -160,7 +163,7 @@ body {
   margin: 0 auto 6px;
   min-height: calc(100vh - 165px);
   position: relative;
-  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  padding-bottom: var(--footer-safe-space);
 }
 
 .scene {
@@ -405,6 +408,8 @@ body {
   background: linear-gradient(120deg, #ff9fc5, #ffd7ad);
   box-shadow: 0 14px 26px rgba(236, 109, 170, 0.3);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .heart-tap-btn:disabled {
@@ -436,6 +441,8 @@ body {
   color: var(--ink);
   font-weight: 700;
   transition: transform 0.25s ease, opacity 0.25s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .note-chip:hover {
@@ -462,6 +469,8 @@ body {
   padding: 10px;
   cursor: pointer;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .flower:hover {
@@ -534,13 +543,17 @@ body {
 }
 
 .proposal-actions {
-  display: flex;
+  display: none;
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
   min-height: 130px;
   position: relative;
   align-items: center;
+}
+
+.proposal-actions:not(.hidden) {
+  display: flex;
 }
 
 .seal-btn {
@@ -553,6 +566,8 @@ body {
   background: linear-gradient(120deg, #fff3fb, #ffe7d5);
   box-shadow: 0 0 0 0 rgba(255, 154, 196, 0.45);
   animation: glowPulse 2s infinite;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .no-btn {
@@ -573,12 +588,17 @@ body {
 }
 
 .yes-moment {
+  display: none;
   margin-top: 16px;
   padding: 14px 12px 6px;
   border-radius: 18px;
   border: 1px solid rgba(212, 170, 77, 0.34);
   background: linear-gradient(180deg, rgba(24, 19, 46, 0.82), rgba(18, 14, 36, 0.8));
   animation: celebrateRise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.yes-moment:not(.hidden) {
+  display: block;
 }
 
 .yes-line {
@@ -598,6 +618,11 @@ body {
   margin: 0 0 10px;
   color: #f0d8a6;
   font-size: 0.95rem;
+}
+
+#yes-moment.hidden,
+#proposal-actions.hidden {
+  display: none !important;
 }
 
 .heart-orbit {
@@ -786,7 +811,7 @@ body.accepted .proposal-card {
 @media (max-width: 900px) {
   .scene-stage {
     min-height: auto;
-    padding-bottom: calc(130px + env(safe-area-inset-bottom));
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
     margin-bottom: 10px;
   }
 
@@ -821,6 +846,10 @@ body.accepted .proposal-card {
 
   .app-footer {
     padding: 7px 10px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .footer-link {
+    font-size: clamp(1rem, 4.2vw, 1.28rem);
   }
 }
 
