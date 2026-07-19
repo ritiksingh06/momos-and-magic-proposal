@@ -937,7 +937,7 @@ function playTinyPiano() {
   });
 }
 
-function runCelebration(preopenedWhatsAppTab = null) {
+function runCelebration() {
   document.body.classList.add("accepted");
   clearTimeout(runCelebration.acceptedTimer);
   runCelebration.acceptedTimer = setTimeout(() => {
@@ -951,25 +951,21 @@ function runCelebration(preopenedWhatsAppTab = null) {
   proposalActions.classList.add("hidden");
   yesMoment.classList.remove("hidden");
 
-  // iOS Safari blocks delayed window.open popups.
-  // Strategy:
-  // 1) Try to reuse a tab opened directly from user gesture if available.
-  // 2) Fallback to same-tab redirect so WhatsApp always opens on mobile.
+  // iOS Safari blocks delayed window.open/location changes from setTimeout.
+  // Use a hidden link element and click it after delay for iOS compatibility.
   clearTimeout(runCelebration.waTimer);
   runCelebration.waTimer = setTimeout(() => {
     const msg = encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
     const waUrl = `https://wa.me/917291848860?text=${msg}`;
 
-    try {
-      if (preopenedWhatsAppTab && !preopenedWhatsAppTab.closed) {
-        preopenedWhatsAppTab.location.href = waUrl;
-      } else {
-        window.location.href = waUrl;
-      }
-    } catch {
-      window.location.href = waUrl;
-    }
-  }, 3200);
+    const link = document.createElement("a");
+    link.href = waUrl;
+    link.target = "_blank";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, 2800);
 
   const canvas = document.getElementById("celebration-canvas");
   const ctx = canvas.getContext("2d");
@@ -1180,20 +1176,11 @@ function setupEvents() {
 
   yesBtn.addEventListener("click", () => {
     logClick("yes button clicked");
-
-    // Open a blank tab directly from user gesture for Safari compatibility.
-    let preopenedWhatsAppTab = null;
-    try {
-      preopenedWhatsAppTab = window.open("about:blank", "_blank");
-    } catch {
-      preopenedWhatsAppTab = null;
-    }
-
     const rect = yesBtn.getBoundingClientRect();
     burstBigLove(rect.left + rect.width / 2, rect.top + rect.height / 2);
     emitButtonSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);
     playTinyPiano();
-    runCelebration(preopenedWhatsAppTab);
+    runCelebration();
   });
 
   shareBtn.addEventListener("click", () => {
