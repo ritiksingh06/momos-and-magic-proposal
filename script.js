@@ -877,6 +877,141 @@ function maybeEscapeFromCursor(event) {
   }
 }
 
+function generateAndSharePeaceTreaty() {
+  // Generate a custom Peace Treaty card as canvas image
+  const canvas = document.createElement("canvas");
+  const dpr = window.devicePixelRatio || 1;
+  const width = 1080 * dpr;
+  const height = 1350 * dpr;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+
+  // Fill background with soft gradient (cream to blush pink)
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, "#FBF8F3");  // Cream
+  gradient.addColorStop(1, "#FFE8E0");  // Blush pink
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  // Helper: Draw text with scaling
+  const drawText = (text, x, y, fontSize, fontFamily, color, align = "center", weight = "400") => {
+    ctx.font = `${weight} ${fontSize * dpr}px ${fontFamily}`;
+    ctx.fillStyle = color;
+    ctx.textAlign = align;
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x * dpr, y * dpr);
+  };
+
+  // Helper: Draw decorative element (heart, sparkle)
+  const drawDecor = (emoji, x, y, size) => {
+    ctx.font = `${size * dpr}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(emoji, x * dpr, y * dpr);
+  };
+
+  // Title with emoji
+  drawDecor("🕊️", 540, 80, 60);
+  drawText("Peace Treaty", 540, 160, 48, "Georgia", "#8B4C5C", "center", "700");
+
+  // Subtitle
+  drawText("Treaty for New Beginnings", 540, 220, 24, "Georgia", "#C17A8C", "center", "500");
+  drawText("Effective Immediately", 540, 260, 18, "Courier New", "#9B6B7C");
+
+  // Decorative line
+  ctx.strokeStyle = "#D4A5B4";
+  ctx.lineWidth = 2 * dpr;
+  ctx.beginPath();
+  ctx.moveTo(150 * dpr, 300 * dpr);
+  ctx.lineTo(930 * dpr, 300 * dpr);
+  ctx.stroke();
+
+  // Main text
+  const mainText = `After careful consideration, excessive smiling,
+and overwhelming evidence of genuine love...`;
+  let yPos = 360;
+  mainText.split("\n").forEach((line) => {
+    drawText(line, 540, yPos, 16, "Georgia", "#5C3D47", "center");
+    yPos += 40;
+  });
+
+  // Agreement preamble
+  drawText("I, Ishita Jaiswal, hereby agree to:", 540, yPos + 30, 18, "Georgia", "#8B4C5C", "center", "600");
+  yPos += 90;
+
+  // Agreement points
+  const agreements = [
+    "❤️  I officially accept your proposal.",
+    "❤️  I accept this lifelong partnership with Ritik Singh.",
+    "❤️  I promise to create countless memories, laugh at your terrible jokes (most of the time),",
+    "and stand by your side through every adventure.",
+    "❤️  We agree to settle disagreements with hugs, snacks, and honest conversations.",
+    "❤️  We promise to celebrate victories, support difficult days, and choose each other daily."
+  ];
+
+  agreements.forEach((line) => {
+    if (line.startsWith("❤️")) {
+      drawText(line.substring(0, 2), 100, yPos, 20, "Arial", "#E84855");
+      drawText(line.substring(2).trim(), 150, yPos, 15, "Georgia", "#5C3D47", "left");
+    } else {
+      drawText(line, 150, yPos, 15, "Georgia", "#5C3D47", "left");
+    }
+    yPos += 45;
+  });
+
+  // Bottom decoration line
+  yPos += 30;
+  ctx.strokeStyle = "#D4A5B4";
+  ctx.lineWidth = 2 * dpr;
+  ctx.beginPath();
+  ctx.moveTo(150 * dpr, yPos * dpr);
+  ctx.lineTo(930 * dpr, yPos * dpr);
+  ctx.stroke();
+
+  // Signature section
+  yPos += 60;
+  drawText("Signed with love ❤️", 540, yPos, 18, "Georgia", "#8B4C5C", "center", "600");
+  yPos += 80;
+
+  const sigY = yPos;
+  drawText("Ishita Jaiswal", 270, sigY, 20, "Brush Script MT, cursive", "#8B4C5C", "center", "700");
+  drawText("Ritik Singh", 810, sigY, 20, "Brush Script MT, cursive", "#8B4C5C", "center", "700");
+
+  // Convert canvas to blob and share
+  canvas.toBlob((blob) => {
+    const file = new File([blob], "peace-treaty.png", { type: "image/png" });
+    const url = URL.createObjectURL(blob);
+
+    // Try using native Web Share API if available
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Peace Treaty ❤️",
+          text: "I accept this proposal! 🕊️",
+          files: [file]
+        })
+        .catch(() => {
+          // Fallback: Open in new tab or download
+          downloadCard(url, "peace-treaty.png");
+        });
+    } else {
+      // Fallback: Provide download link
+      downloadCard(url, "peace-treaty.png");
+    }
+  }, "image/png");
+}
+
+function downloadCard(url, filename) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast("Card ready to share! 🎉");
+}
+
 function runProposalIntro() {
   proposalCard.classList.remove("celebrating");
   yesMoment.classList.add("hidden");
@@ -937,6 +1072,40 @@ function playTinyPiano() {
   });
 }
 
+function triggerWhatsAppRedirect() {
+  const msg = encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
+  const waUrl = `https://wa.me/917291848860?text=${msg}`;
+  const waProtocol = `whatsapp://send?phone=917291848860&text=${msg}`;
+
+  // Strategy: Try multiple redirect methods for iOS Safari compatibility.
+  // 1. Try direct location assignment (works best on most devices)
+  // 2. Fallback to whatsapp:// protocol
+  // 3. Fallback back to wa.me via anchor click
+
+  const attemptRedirect = () => {
+    try {
+      // Try wa.me first (most reliable across platforms)
+      window.location.href = waUrl;
+    } catch {
+      try {
+        // Fallback to whatsapp:// protocol
+        window.location.href = waProtocol;
+      } catch {
+        // Last resort: anchor click
+        const link = document.createElement("a");
+        link.href = waUrl;
+        link.target = "_blank";
+        link.click();
+      }
+    }
+  };
+
+  // Use minimal delay (100ms) to stay within iOS user-gesture window,
+  // or execute immediately if called synchronously.
+  clearTimeout(runCelebration.waTimer);
+  runCelebration.waTimer = setTimeout(attemptRedirect, 100);
+}
+
 function runCelebration() {
   document.body.classList.add("accepted");
   clearTimeout(runCelebration.acceptedTimer);
@@ -951,20 +1120,10 @@ function runCelebration() {
   proposalActions.classList.add("hidden");
   yesMoment.classList.remove("hidden");
 
-  // iOS Safari blocks delayed window.open/location changes from setTimeout.
-  // Use a hidden link element and click it after delay for iOS compatibility.
+  // Trigger WhatsApp redirect after 2.8s celebration.
   clearTimeout(runCelebration.waTimer);
   runCelebration.waTimer = setTimeout(() => {
-    const msg = encodeURIComponent("I forgive you, idiot. Now take me out for momos! 🥟❤");
-    const waUrl = `https://wa.me/917291848860?text=${msg}`;
-
-    const link = document.createElement("a");
-    link.href = waUrl;
-    link.target = "_blank";
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    triggerWhatsAppRedirect();
   }, 2800);
 
   const canvas = document.getElementById("celebration-canvas");
@@ -1181,11 +1340,13 @@ function setupEvents() {
     emitButtonSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);
     playTinyPiano();
     runCelebration();
+    // Also attempt immediate redirect for iOS (fallback if delayed redirect fails)
+    triggerWhatsAppRedirect();
   });
 
   shareBtn.addEventListener("click", () => {
     logClick("share magic clicked");
-    shareMagicCard();
+    generateAndSharePeaceTreaty();
   });
 
   const footerLink = document.querySelector(".footer-link");
